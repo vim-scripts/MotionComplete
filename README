@@ -1,0 +1,62 @@
+This is a mirror of http://www.vim.org/scripts/script.php?script_id=4265
+
+DESCRIPTION
+Most insert mode completions complete only the current word (or an entire
+line), so one has to repeat i_CTRL-X_CTRL-N to complete the following words.
+For longer completions, this is slow, especially because you sometimes have to
+choose from multiple choices.
+The completion provided by this plugin assumes that you know a Vim motion
+(e.g. '3e', ')' or '/bar/e') or text object which covers the text you want
+completed. When you invoke the completion, the completion base (some text
+before the cursor, or the currently selected text) will be presented and the
+motion to cover the completion text (including the completion base) will be
+queried. Then, the list of completion candidates will be prepared and selected
+in the usual way.
+
+SEE ALSO
+- Check out the CompleteHelper.vim plugin page (vimscript #3914) for a full
+  list of insert mode completions powered by it.
+
+USAGE
+In insert mode, invoke the completion via CTRL-X CTRL-M.
+
+This completion method is probably only used for longer matches, as
+invoking this completion method with the querying of the {motion} isn't
+very fast. For motions that cover many words or entire sentences, an empty
+base isn't helpful, there would be far too many matches. To ensure a
+completion base, this completion includes more than the usual keyword
+characters directly before the cursor. It looks for the following before the
+cursor, possibly with whitespace between it and the cursor:
+- keyword character(s), e.g "foo" in "return (foo|"
+- non-keyword non-whitespace character(s), e.g. "/*" in "return 0; /* |"
+- keyword character(s) followed by non-keyword non-whitespace characters,
+  e.g. "foo(" in "return foo(|"
+When the completion base starts with a keyword character, matches must start
+at a \<word border.
+Alternatively, you can pre-select the base (via select or visual mode) before
+invoking the completion. This ensures that the best context for completion is
+chosen.
+
+Input the {motion}.
+You can then search forward and backward via CTRL-N / CTRL-P, as usual.
+
+CTRL-X CTRL-M           The completion first queries for {motion} (press
+                        <Enter> to conclude), then finds matches starting with
+                        the MotionComplete-base text before the cursor,
+                        covering {motion}.
+
+{Visual}CTRL-X CTRL-M   The completion first queries for {motion} (press
+                        <Enter> to conclude), then finds matches starting with
+                        the selected text, covering {motion}.
+                        Use this to define the completion base text (quickly
+                        done from insert mode via [CTRL-]SHIFT-<Left>) for
+                        better matches.
+
+EXAMPLE
+A quick|
+       ^ cursor, just triggered motion completion.
+
+(Somewhere else, a match:)
+    v---v completion base
+The quick brown fox jumps over the lazy dog.
+    ^----------- "5w" --------^ completion via motion 5w
